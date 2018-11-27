@@ -1,0 +1,18 @@
+service: ciacka-net-api
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: prod
+  region: eu-west-1
+  usagePlan:
+    throttle:
+      rateLimit: 1
+      burstLimit: 2
+
+functions:
+  sendMailApp:
+    handler: index.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
