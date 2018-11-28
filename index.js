@@ -1,6 +1,3 @@
-// Load .env file
-require('dotenv').config();
-
 const serverless = require('serverless-http');
 const express = require('express');
 const app = express();
@@ -18,26 +15,28 @@ app.post('/message', [
 ], (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        return res.status(422).json({ status: 'BAD_REQUEST', errors: errors.array() });
     }
 
+    const senderEmail = process.env.SENDER_EMAIL;
+    const receiverEmail = process.env.RECEIVER_EMAIL;
     const subject = req.body.subject ? req.body.subject : 'Wiadomość ze strony ciacka.net';
     const message = `${req.body.message}\n\n--\n${req.body.name}\n\nWiadomość wysłana ze strony ciacka.net`;
 
     const sesParams = {
-        Destination: { ToAddresses: ['receiver@example.com'] },
+        Destination: { ToAddresses: [receiverEmail] },
         Message: {
             Body: {
                 Text: { Data: message, Charset: 'UTF-8' }
             },
             Subject: { Data: subject, Charset: 'UTF-8' }
         },
-        Source: 'sender@example.com',
+        Source: senderEmail,
         ReplyToAddresses: [req.body.email]
     };
 
     awsSES.sendEmail(sesParams).promise().then(() => {
-        return res.status(204);
+        return res.status(204).send();
     }).catch((err) => {
         console.log(err, err.stack);
         return res.status(500).json({status: 'FAILURE', message: 'Internal server error occured.'});
