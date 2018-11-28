@@ -8,6 +8,15 @@ provider:
   runtime: nodejs8.10
   stage: prod
   region: eu-west-1
+  environment:
+    SENDER_EMAIL: ${ssm:contactFormSenderEmail}
+    RECEIVER_EMAIL: ${ssm:contactFormReceiverEmail}
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "ses:SendEmail"
+      Resource: "*"
 
 functions:
   sendMailApp:
