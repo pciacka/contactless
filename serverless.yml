@@ -8,10 +8,6 @@ provider:
   runtime: nodejs8.10
   stage: prod
   region: eu-west-1
-  usagePlan:
-    throttle:
-      rateLimit: 1
-      burstLimit: 2
 
 functions:
   sendMailApp:
